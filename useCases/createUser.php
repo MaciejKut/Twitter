@@ -6,7 +6,7 @@ require_once '../connection.php';
 $user1 = new User();
 $user1->setName('Maciej');
 $user1->setEmail('maciej.kutzmann@gmail.com');
-$user1->setPassword('pass1jklfd');
+$user1->setPassword('password');
 
 var_dump($user1->saveToDB($conn));
 
