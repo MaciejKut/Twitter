@@ -1,132 +1,127 @@
 <?php
 
 class User {
+
     private $id;
     private $name;
     private $email;
     private $hashedPassword;
 
-
-    public function __construct(){
+    public function __construct() {
         $this->id = -1;
         $this->name = '';
         $this->email = '';
         $this->hashedPassword = '';
     }
-    
+
     public function getId() {
         return $this->id;
-    } 
-    
-    public function setName($name){
-        if(is_string($name) && strlen(trim($name)) >0){
+    }
+
+    public function setName($name) {
+        if (is_string($name) && strlen(trim($name)) > 0) {
             $this->name = trim($name);
         }
     }
-    
-    public function getName(){
+
+    public function getName() {
         return $this->name;
     }
-    
+
     public function setEmail($email) {
-        if(is_string($email) && strlen(trim($email)) >=5){
+        if (is_string($email) && strlen(trim($email)) >= 5) {
             $this->email = trim($email);
         }
-        
     }
-    
+
     public function getEmail() {
         return $this->email;
-        
     }
-    
-    public function setPassword($password){
-        if(is_string($password) && strlen(trim($password)) >5 ) {
+
+    public function setPassword($password) {
+        if (is_string($password) && strlen(trim($password)) > 5) {
             $this->hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         }
     }
-    
-    public function saveToDB(mysqli $connection){
-        if($this->id == -1){
+
+    public function saveToDB(mysqli $connection) {
+        if ($this->id == -1) {
             $query = "INSERT INTO Users (email, name, hashed_password) 
                 VALUES ('$this->email', '$this->name', '$this->hashedPassword')";
-            if($connection->query($query)) {
+            if ($connection->query($query)) {
                 return true;
-            }  else {
-               return false;    
+            } else {
+                return false;
             }
-        }  else { // na wypadek wywołania do obiektu gdzie istnieje
-            
+        } else { // na wypadek wywołania do obiektu gdzie istnieje
             $query = "UPDATE Users 
                  SET name = '$this->name',
                  email = '$this->email',
                  hashed_password = '$this->hashedPassword'
                  WHERE id = $this->id";
-                    if($connection->query($query)){
-                        return true;
-                    }else{
-                        return false;
-                    }
-                        
+            if ($connection->query($query)) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
-    
-    static public function loadUserById(mysqli $connection, $id){
-        $query = " SELECT * FROM Users WHERE id =".$connection->real_escape_string($id);
-        
+
+    static public function loadUserById(mysqli $connection, $id) {
+        $query = " SELECT * FROM Users WHERE id =" . $connection->real_escape_string($id);
+
         $res = $connection->query($query);
-        if($res && $res->num_rows == 1){
+        if ($res && $res->num_rows == 1) {
             $row = $res->fetch_assoc();
             $user = new User();
             $user->id = $row['id'];
             $user->setName($row['name']);
             $user->setEmail($row['email']);
             $user->hashedPassword = $row['hashed_password'];
-            
+
             return $user;
         }
         return null;
     }
-    
-    static public function loadAllUsers(mysqli $connection){
+
+    static public function loadAllUsers(mysqli $connection) {
         $query = "SELECT * FROM Users";
-        
+
         $users = [];
         $res = $connection->query($query);
-        
-        if($res){
-        foreach ($res as $row) {
-            $user = new User();
-            $user->id = $row['id'];
-            $user->setName($row['name']);
-            $user->setEmail($row['email']);
-            $user->hashedPassword = $row['hashed_password'];
-            
-            $users[] = $user;
-        }
+
+        if ($res) {
+            foreach ($res as $row) {
+                $user = new User();
+                $user->id = $row['id'];
+                $user->setName($row['name']);
+                $user->setEmail($row['email']);
+                $user->hashedPassword = $row['hashed_password'];
+
+                $users[] = $user;
+            }
         }
         return $users;
     }
-    
-    
-    public function delete(mysqli $connection){
-        if($this->id != -1){
+
+    public function delete(mysqli $connection) {
+        if ($this->id != -1) {
             $query = "DELETE FROM Users WHERE id = $this->id";
-            if($connection->query($query)){
+            if ($connection->query($query)) {
                 $this->id = -1;
                 return true;
-            }  else {
+            } else {
                 return false;
             }
         }
         return true;
     }
-    
-    static public function loadUserByEmail(mysqli $connection, $email){
-        $query = "SELECT * FROM Users WHERE email = '".$connection->real_escape_string($email)."'";
-        
+
+    static public function loadUserByEmail(mysqli $connection, $email) {
+        $query = "SELECT * FROM Users WHERE email = '" . $connection->real_escape_string($email) . "'";
+
         $res = $connection->query($query);
-        if($res && $res->num_rows ==1){
+        if ($res && $res->num_rows == 1) {
             $row = $res->fetch_assoc();
             $user = new User();
             $user->id = $row['id'];
@@ -137,15 +132,15 @@ class User {
         }
         return null;
     }
-    
-    static public function login(mysqli $connection, $email, $password){
+
+    static public function login(mysqli $connection, $email, $password) {
         $user = self::loadUserByEmail($connection, $email);
-        if($user && password_verify($password, $user->hashedPassword)){
-        // funkcja password verify
-           return $user;
-                    
-        }  else {
-            return false;    
+        if ($user && password_verify($password, $user->hashedPassword)) {
+            // funkcja password verify
+            return $user;
+        } else {
+            return false;
         }
     }
-} 
+
+}
