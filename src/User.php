@@ -83,6 +83,18 @@ class User {
         }
         return null;
     }
+    static public function returnUserNameById(mysqli $connection, $id) {
+        $query = " SELECT * FROM Users WHERE id =" . $connection->real_escape_string($id);
+
+        $res = $connection->query($query);
+        if ($res && $res->num_rows == 1) {
+            $row = $res->fetch_assoc();
+            $userName =$row['name'];
+
+            return $userName;
+        }
+        return null;
+    }
 
     static public function loadAllUsers(mysqli $connection) {
         $query = "SELECT * FROM Users";
