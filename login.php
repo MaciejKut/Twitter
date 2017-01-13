@@ -63,12 +63,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <p>Skorzystaj z poniższego formularza</p>
                 <form class="form-signin" action="register.php" method="POST">
                     <h2 class="form-signin-heading">Please Register</h2>
+                    Nazwa użytkownika:
                     <label for="name" class="sr-only">User name</label>
                     <input name="name" type="text" class="form-control" placeholder="Type your user name" required autofocus>
-
+                    Email użytkownika:
                     <label for="email" class="sr-only">Email address</label>
                     <input name="email" type="email" class="form-control" placeholder="Email address" required autofocus>
-
+                    Hasło użytkownika:
                     <label for="password" class="sr-only">Password</label>
                     <input name="password" type="password" class="form-control" placeholder="Password" required>
 

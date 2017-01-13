@@ -1,4 +1,4 @@
-<?php
+<?php 
 require_once 'src/Tweet.php';
 require_once 'src/User.php';
 require_once 'connection.php';
@@ -9,19 +9,6 @@ if (!isset($_SESSION['userId'])) {
     header('Location: login.php');
 }
 
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['newTweet']) {
-    $tweet = $_POST['newTweet'];
-    if (strlen($tweet) > 0 AND strlen($tweet) < 144) {
-        $newTweetToDB = new Tweet();
-        $newTweetToDB->setText($tweet);
-        $newTweetToDB->setUserId($_SESSION['userId']);
-        $newTweetToDB->setCreationDate(date('Y-m-d G:i:s'));
-        $newTweetToDB->saveToDB($conn);
-    } else {
-        echo 'Tweet musi mieć długość pomiędzy 1 a 144 znaki';
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -50,9 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['newTweet']) {
                     <a class="navbar-brand" href="#">MiniTweeti</a>
                 </div>
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Home</a></li>
+                    <li class="active"><a href="index.php">Home</a></li>
                     <li><a href="user_page.php">Strona użytkownika</a></li>
                     <li><a href="meesagePanel.php">Wiadomości</a></li>
+                    <li><a href="modify_user.php">Zmodyfikuj swoje dane</a></li>
                     <li><a href="logout.php">Wyloguj</a></li>
                 </ul>
             </div>
@@ -60,19 +48,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['newTweet']) {
 
         <div class="container">
 
-            <h1> Witaj <?php echo User::loadUserById($conn, $_SESSION['userId'])->getName(); ?></h1>
+            <h1> Witaj <?php echo User::loadUserById($conn, $_SESSION['userId'])->getName();?></h1>
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             <?php
-            $allTweets = Tweet::loadAllTweets($conn);
+            $allTweets = Tweet::loadAllTweetByUserId($conn, $_SESSION['userId']);
             ?>
 
-            <form action="#" method="POST">
-                <label>Napisz co Ci chodzi po głowie:</label>
-                <textarea class="form-control" name="newTweet" rows="3" placeholder="Max lenght 144 signs. 
-                          Type something interesting" maxlength="144"></textarea>
-                <input type="submit">
-            </form>
-
-            <h2 class="sub-header">Section title</h2>
+            <h2 class="sub-header">Twoje tweety</h2>
             <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
@@ -88,13 +81,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['newTweet']) {
                         foreach ($allTweets as $value) {
                             echo '<tr>';
                             echo "<td>" . $value->getId() . "</td>";
-                            echo "<td>" . $value->getText();
-                            echo '<br><a href="post.php?id='.$value->getId() .'">Wyświetl post</a>';
-                            echo '</td>';
+                            echo "<td>" . $value->getText() . "</td>";
                             echo "<td>" . User::returnUserNameById($conn, $value->getUserId()) . "</td>";
                             echo "<td>" . $value->getCreationDate() . "</td>";
                             echo '</tr>';
-                            
                         }
                         ?>
 

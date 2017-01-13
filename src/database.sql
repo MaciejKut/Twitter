@@ -9,6 +9,6 @@ CREATE TABLE Tweet(
 id int PRIMARY KEY Auto_INCREMENT,
 userId int NOT NULL,
 text varchar(144),
-creationDate DATE,
+creationDate DATETIME,
 FOREIGN KEY(UserId) REFERENCES Users(id)
 );

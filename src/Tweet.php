@@ -118,7 +118,7 @@ class Tweet implements Iterator {
     }
     
     static public function loadAllTweets(mysqli $connection) {
-        $query = "SELECT * FROM Tweet";
+        $query = "SELECT * FROM Tweet ORDER BY creationDate DESC";
         
         $tweets = [];
         $result = $connection->query($query);

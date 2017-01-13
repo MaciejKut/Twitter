@@ -1,5 +1,4 @@
 <?php
-require_once 'src/Tweet.php';
 require_once 'src/User.php';
 require_once 'connection.php';
 
@@ -8,14 +7,21 @@ session_start();
 if (!isset($_SESSION['userId'])) {
     header('Location: login.php');
 }
-
-
-if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['id']) {
-    $id = (string) $_GET['id'];
-} else {
-    echo 'Nie dostałem id postu do wyświetlenia';
-    header('Location: index.php');
-}
+$user = User::loadUserById($conn, $_SESSION['userId']);
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if($_POST['password'] && strlen($_POST['password']) >= 6){
+        $user->setPassword($_POST['password']);
+        $user->saveToDB($conn);
+    } else {
+        echo 'Nieprawidłowe hasło musi mieć co najmniej 6 znaków';
+        return false;
+    }
+    if($_POST['name']){
+        $user->setName($_POST['name']);
+        $user->saveToDB($conn);
+    }
+    echo 'Dane zostały poprawnie zmienione';
+} 
 ?>
 
 <!DOCTYPE html>
@@ -47,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['id']) {
                     <li class="active"><a href="index.php">Home</a></li>
                     <li><a href="user_page.php">Strona użytkownika</a></li>
                     <li><a href="meesagePanel.php">Wiadomości</a></li>
-                    <li><a href="modify_user.php">Wyloguj</a></li>
+                    <li><a href="modify_user.php">Zmodyfikuj swoje dane</a></li>
                     <li><a href="logout.php">Wyloguj</a></li>
                 </ul>
             </div>
@@ -56,45 +62,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['id']) {
         <div class="container">
 
             <h1> Witaj <?php echo User::loadUserById($conn, $_SESSION['userId'])->getName(); ?></h1>
-            <?php
-            $post = Tweet::loadTweetById($conn, $id);
-            $postAuthor = User::loadUserById($conn, $post->getUserId());
-            ?>
+            Możesz zmienić swoje dane używając poniższego formularza.
+            Zmienić można tylko hasło lub nazwę użytkownika
+            <form method="POST" action="#">
+                <div class="form-group row">
+                    <label for="name" class="col-2 col-form-label">Nazwa użytkownika</label>
+                    <div class="col-10">
+                        <input class="form-control" type="text" value="Type new Name" name="name">
+                    </div>
+                </div>
 
-            <!--            <form action="#" method="POST">
-                            <label>Napisz co Ci chodzi po głowie:</label>
-                            <textarea class="form-control" name="newTweet" rows="3" placeholder="Max lenght 144 signs. 
-                                      Type something interesting" maxlength="144"></textarea>
-                            <input type="submit">
-                        </form>-->
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Post text</th>
-                        <th>Post author</th>
-                        <th>Creation Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row">1</th>
-                        <td><?php echo $post->getText(); ?></td>
-                        <td><?php echo $postAuthor->getName(); ?></td>
-                        <td><?php echo $post->getCreationDate(); ?></td>
-                    </tr>
-
-                    <tr>
-                        <th scope="row">Comments</th>
-                        <td colspan="3">Tutaj wrzucimy komentarze albo następna tabelkę</td>
-                        
-                    </tr>
-                </tbody>
-            </table>
-
+                <div class="form-group row">
+                    <label for="password" class="col-2 col-form-label">Password</label>
+                    <div class="col-10">
+                        <input class="form-control" type="password" placeholder="Type new password min 6 characters" name="password">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit</button>
         </div>
 
+    </form>
 
-    </body>
+</body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
 

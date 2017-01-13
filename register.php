@@ -17,8 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $newUser->setEmail($email);
         $newUser->setPassword($password);
         if ($newUser->saveToDB($conn)) {
-            $_SESSION['userId'] = $user->getId();
-            header('Location: index.php');
+                      
+           echo "<a href=login.php>Użytkownik został stworzony zaloguj się na swoje konto</a>";
+            
         }
     } else {
         echo 'Wrong password - must have minimum 6signs';
