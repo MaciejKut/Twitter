@@ -8,6 +8,20 @@ session_start();
 if (!isset($_SESSION['userId'])) {
     header('Location: login.php');
 }
+
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['newTweet']) {
+    $tweet = $_POST['newTweet'];
+    if (strlen($tweet) > 0 AND strlen($tweet) < 144) {
+        $newTweetToDB = new Tweet();
+        $newTweetToDB->setText($tweet);
+        $newTweetToDB->setUserId($_SESSION['userId']);
+        $newTweetToDB->setCreationDate(date('Y-m-d'));
+        $newTweetToDB->saveToDB($conn);
+    } else {
+        echo 'Tweet musi mieć długość pomiędzy 1 a 144 znaki';
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -32,9 +46,16 @@ if (!isset($_SESSION['userId'])) {
     <body>
         <div class="container"><h1> Witaj</h1>
             <?php
-            var_dump($_SESSION['userId']);
             $allTweets = Tweet::loadAllTweets($conn);
             ?>
+
+            <form action="#" method="POST">
+                <label>Napisz co Ci chodzi po głowie:</label>
+                <textarea class="form-control" name="newTweet" rows="3" placeholder="Max lenght 144 signs. 
+                          Type something interesting" maxlength="144"></textarea>
+                <input type="submit">
+            </form>
+
             <h2 class="sub-header">Section title</h2>
             <div class="table-responsive">
                 <table class="table table-striped">
@@ -53,7 +74,7 @@ if (!isset($_SESSION['userId'])) {
                             echo "<td>" . $value->getId() . "</td>";
                             echo "<td>" . $value->getText() . "</td>";
                             echo "<td>" . User::returnUserNameById($conn, $value->getUserId()) . "</td>";
-                            echo "<td>".$value->getCreationDate()."</td>";
+                            echo "<td>" . $value->getCreationDate() . "</td>";
                             echo '</tr>';
                         }
                         ?>
@@ -63,6 +84,6 @@ if (!isset($_SESSION['userId'])) {
             </div>
         </div>
 
-    </div>
-</body>
+
+    </body>
 </html>
