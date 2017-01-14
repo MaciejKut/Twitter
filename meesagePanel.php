@@ -16,16 +16,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['newMeesage']) {
     $email = $_POST['reciver'];
     $reciver = User::loadUserByEmail($conn, $email);
 
-    if (strlen($mail) > 0 AND strlen($mail) < 255) {
-        $newMeesageToDB = new Meesages();
-        $newMeesageToDB->setReciver($reciver->getId());
-        $newMeesageToDB->setSender($_SESSION['userId']);
-        $newMeesageToDB->setText($_POST['newMeesage']);
-        $newMeesageToDB->setCreation_date(date('Y-m-d G:i:s'));
-        $newMeesageToDB->setMeesage_subject($_POST['meesage_subject']);
-        $newMeesageToDB->saveToDB($conn);
+    if ($reciver) {
+        if (strlen($mail) > 0 AND strlen($mail) < 255) {
+            $newMeesageToDB = new Meesages();
+            $newMeesageToDB->setReciver($reciver->getId());
+            $newMeesageToDB->setSender($_SESSION['userId']);
+            $newMeesageToDB->setText($_POST['newMeesage']);
+            $newMeesageToDB->setCreation_date(date('Y-m-d G:i:s'));
+            $newMeesageToDB->setMeesage_subject($_POST['meesage_subject']);
+            $newMeesageToDB->saveToDB($conn);
+        } else {
+            echo 'Maksymalna długość wiadomośc to 255 znaków';
+        }
     } else {
-        echo 'Maksymalna długość wiadomośc to 255 znaków';
+        echo '<b>Nie ma użytkownika o takim emailu w bazie danych, to nie email'
+        . 'tylko wewnętrzna poczta. Jest user maciej.kutzmann@gmail.com tam wyślij';
     }
 }
 ?>
@@ -118,9 +123,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['newMeesage']) {
                                 default:
                                     break;
                             }
-                            
-                            
-                            
+
+
+
                             echo '</td></tr>';
                         }
                         ?>
