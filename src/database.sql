@@ -12,3 +12,13 @@ text varchar(144),
 creationDate DATETIME,
 FOREIGN KEY(UserId) REFERENCES Users(id)
 );
+
+CREATE TABLE Comment(
+id int PRIMARY KEY Auto_INCREMENT,
+id_user int NOT NULL,
+id_post int NOT NULL,
+creation_date DATETIME,
+text varchar(144),
+FOREIGN KEY(id_user) REFERENCES Users(id),
+FOREIGN KEY(id_post) REFERENCES Tweet(id)
+);

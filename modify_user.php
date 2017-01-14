@@ -9,19 +9,23 @@ if (!isset($_SESSION['userId'])) {
 }
 $user = User::loadUserById($conn, $_SESSION['userId']);
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if($_POST['password'] && strlen($_POST['password']) >= 6){
-        $user->setPassword($_POST['password']);
-        $user->saveToDB($conn);
-    } else {
-        echo 'Nieprawidłowe hasło musi mieć co najmniej 6 znaków';
-        return false;
+
+    switch ($_POST['submit']) {
+        case 'name':
+            $user->setName($_POST['name']);
+            $user->saveToDB($conn);
+            echo 'Zmieniono nazwę na' . $_POST['name'];
+            break;
+        case 'password':
+            if (strlen($_POST['password']) >= 6) {
+                $user->setPassword($_POST['password']);
+                $user->saveToDB($conn);
+            } else {
+                echo 'Nieprawidłowe hasło musi mieć co najmniej 6 znaków';
+            }
+            break;
     }
-    if($_POST['name']){
-        $user->setName($_POST['name']);
-        $user->saveToDB($conn);
-    }
-    echo 'Dane zostały poprawnie zmienione';
-} 
+}
 ?>
 
 <!DOCTYPE html>
@@ -70,14 +74,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="col-10">
                         <input class="form-control" type="text" value="Type new Name" name="name">
                     </div>
+                    <input type="hidden" name="submit" value="name">
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
-
+            </form>
+            <form method="POST" action="#">
                 <div class="form-group row">
                     <label for="password" class="col-2 col-form-label">Password</label>
                     <div class="col-10">
                         <input class="form-control" type="password" placeholder="Type new password min 6 characters" name="password">
                     </div>
                 </div>
+                <input type="hidden" name="submit" value="password">
                 <button type="submit" class="btn btn-primary">Submit</button>
         </div>
 

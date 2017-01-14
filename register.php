@@ -1,5 +1,4 @@
 <?php
-
 require_once 'src/User.php';
 require_once 'connection.php';
 
@@ -17,12 +16,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $newUser->setEmail($email);
         $newUser->setPassword($password);
         if ($newUser->saveToDB($conn)) {
-                      
-           echo "<a href=login.php>Użytkownik został stworzony zaloguj się na swoje konto</a>";
-            
-        }
-    } else {
-        echo 'Wrong password - must have minimum 6signs';
-    }
-} 
 
+            $user = User::login($conn, $email, $password);
+            if ($user) {
+                $_SESSION['userId'] = $user->getId();
+                header('Location: index.php');
+            } else {
+                echo 'Niepoprawne dane logowania.'
+                . '<br> Jeżeli nie posiadasz konta załóż je.';
+            }
+        } else {
+            echo 'Wpisałeś zbyt krótkie hasło lub email istnieje już w bazie';
+            echo '<br> <a href="login.php">Spróbuj ponownie</a>';
+           // header('Location: login.php');
+        }
+    }
+}
+?>
+<html>
+    <head><body>
+
+
+
+    </body></head>
+</html>
