@@ -74,7 +74,7 @@ class Comment {
             }
         }
     }
-    
+
     static public function loadCommentById(mysqli $connection, $id) {
         $query = " SELECT * FROM Comment WHERE id =" . $connection->real_escape_string($id);
 
@@ -92,14 +92,15 @@ class Comment {
         }
         return null;
     }
-    
+
     static function loadAllCommentsByPostId(mysqli $connection, $postId) {
-        $query = "SELECT * FROM Comment WHERE userId=" . $connection->real_escape_string($postId)."ORDER BY creationDate DESC";
+        
+        $query = "SELECT * FROM `Comment` WHERE id_post=".$connection->real_escape_string($postId)." ORDER BY creation_date DESC";
 
         $result = $connection->query($query);
 
         $comments = [];
-        if($result){
+        if ($result) {
             foreach ($result as $row) {
                 $comment = new Comment();
                 $comment->id = $row['id'];
@@ -108,7 +109,6 @@ class Comment {
                 $comment->creation_date = $row['creation_date'];
                 $comment->text = $row['text'];
                 $comments[] = $comment;
-                
             }
         }
         return $comments;

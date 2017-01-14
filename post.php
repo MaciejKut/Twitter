@@ -1,6 +1,7 @@
 <?php
 require_once 'src/Tweet.php';
 require_once 'src/User.php';
+require_once 'src/Comment.php';
 require_once 'connection.php';
 
 session_start();
@@ -12,10 +13,26 @@ if (!isset($_SESSION['userId'])) {
 
 if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['id']) {
     $id = (string) $_GET['id'];
-} else {
-    echo 'Nie dostałem id postu do wyświetlenia';
-    header('Location: index.php');
+    $_SESSION['id'] = $id;
 }
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['comment']) {
+    $comment = $_POST['comment'];
+    if (strlen($comment) > 0 AND strlen($comment) < 144) {
+        $newCommentToDB = new Comment();
+        $newCommentToDB->setCreation_date(date('Y-m-d G:i:s'));
+        $newCommentToDB->setText($comment);
+        $newCommentToDB->setId_post($_SESSION['id']);
+        $newCommentToDB->setId_user($_SESSION['userId']);
+        //var_dump($newCommentToDB);
+        $newCommentToDB->saveToDB($conn);
+    } else {
+        echo 'Komentarz musi mieć długość pomiędzy 1 a 144 znaki';
+    }
+}
+//} else {
+//    echo 'Nie dostałem id postu do wyświetlenia';
+//    header('Location: index.php');
+//}
 ?>
 
 <!DOCTYPE html>
@@ -57,16 +74,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['id']) {
 
             <h1> Witaj <?php echo User::loadUserById($conn, $_SESSION['userId'])->getName(); ?></h1>
             <?php
-            $post = Tweet::loadTweetById($conn, $id);
+            $post = Tweet::loadTweetById($conn, $_SESSION['id']);
             $postAuthor = User::loadUserById($conn, $post->getUserId());
+            $allComments = Comment::loadAllCommentsByPostId($conn, $_SESSION['id']);
+            //var_dump($_SESSION['id']);
+            //var_dump($allComments);
             ?>
 
-            <!--            <form action="#" method="POST">
-                            <label>Napisz co Ci chodzi po głowie:</label>
-                            <textarea class="form-control" name="newTweet" rows="3" placeholder="Max lenght 144 signs. 
-                                      Type something interesting" maxlength="144"></textarea>
-                            <input type="submit">
-                        </form>-->
+            <form action="#" method="POST">
+                <label>Napisz komentarz</label>
+                <textarea class="form-control" name="comment" rows="3" placeholder="Max lenght 144 signs. 
+                          Type something interesting" maxlength="144"></textarea>
+                <input type="submit">
+            </form>
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -84,17 +104,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET' && $_GET['id']) {
                         <td><?php echo $post->getCreationDate(); ?></td>
                     </tr>
 
-                    <tr>
-                        <th scope="row">Comments</th>
-                        <td colspan="3">Tutaj wrzucimy komentarze albo następna tabelkę</td>
-                        
-                    </tr>
                 </tbody>
             </table>
 
+
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Komentarz</th>
+                        <th>Użytkownik</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    foreach ($allComments as $value) {
+                        echo '<tr>';
+                        echo "<td>" . $value->getText();
+                        echo '</td>';
+                        echo "<td>" . User::returnUserNameById($conn, $value->getId_user()) . "</td>";
+                        echo "<td>" . $value->getCreation_date() . "</td>";
+                        echo '</tr>';
+                    }
+                    ?>
+
+                </tbody>
+            </table>
         </div>
 
 
     </body>
 </html>
+
+
+
 
