@@ -50,17 +50,6 @@ if (!isset($_SESSION['userId'])) {
 
             <h1> Witaj <?php echo User::loadUserById($conn, $_SESSION['userId'])->getName();?></h1>
             
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
             <?php
             $allTweets = Tweet::loadAllTweetByUserId($conn, $_SESSION['userId']);
             ?>
@@ -82,7 +71,9 @@ if (!isset($_SESSION['userId'])) {
                             echo '<tr>';
                             echo "<td>" . $value->getId() . "</td>";
                             echo "<td>" . $value->getText() . "</td>";
-                            echo "<td>" . User::returnUserNameById($conn, $value->getUserId()) . "</td>";
+                            echo "<td>" . User::returnUserNameById($conn, $value->getUserId());
+                            echo '<br><a href="post.php?id='.$value->getId() .'">Wyświetl post</a>';
+                            echo '</td>';
                             echo "<td>" . $value->getCreationDate() . "</td>";
                             echo '</tr>';
                         }

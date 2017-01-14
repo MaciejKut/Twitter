@@ -99,8 +99,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['comment']) {
                 <tbody>
                     <tr>
                         <th scope="row">1</th>
-                        <td><?php echo $post->getText(); ?></td>
-                        <td><?php echo $postAuthor->getName(); ?></td>
+                        <td><?php echo $post->getText();?></td>
+                        <td><?php echo $postAuthor->getName(); ?> </td>
                         <td><?php echo $post->getCreationDate(); ?></td>
                     </tr>
 
